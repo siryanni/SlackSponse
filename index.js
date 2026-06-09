@@ -1,7 +1,5 @@
 const axios = require("axios");
-
 require("dotenv").config();
-
 const { App } = require("@slack/bolt");
 
 const app = new App({
@@ -19,12 +17,30 @@ app.command("/slp-ping", async ({ command, ack, respond }) => {
 
 app.command("/slp-catfac", async ({ ack, respond }) => {
     await ack();
-
     try {
         const response = await axios.get("https://catfact.ninja/fact");
         await respond({ text: `Cat Fact:\n${response.data.fact}` });
     } catch (err) {
         await respond({ text: "Failed to fetch a cat fact." });
+    }
+});
+
+app.command("/slp-help", async ({ ack, respond }) => {
+    await ack();
+    await respond({
+        text: `Available Commands:\n/slp-ping - Check bot latency\n/slp-catfac - Get a cat fact\n/slp-joke - Get a random joke`
+    });
+});
+
+app.command("/slp-joke", async ({ ack, respond }) => {
+    await ack();
+    try {
+        const response = await axios.get("https://official-joke-api.appspot.com/random_joke");
+        await respond({
+            text: `${response.data.setup}\n\n${response.data.punchline}`
+        });
+    } catch (err) {
+        await respond({ text: "Failed to fetch a joke." });
     }
 });
 
